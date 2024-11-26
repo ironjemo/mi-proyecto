@@ -1,13 +1,3 @@
-# Maven
-# Build your Java project and run tests with Apache Maven.
-# Add steps that analyze code, save build artifacts, deploy, and more:
-# https://docs.microsoft.com/azure/devops/pipelines/languages/java
-
-
-# Maven
-# Build your Java project and run tests with Apache Maven.
-# Add steps that analyze code, save build artifacts, deploy, and more:
-# https://docs.microsoft.com/azure/devops/pipelines/languages/java
 
 # Maven
 # Build your Java project and run tests with Apache Maven.
@@ -25,7 +15,10 @@ steps:
   displayName: 'Maven build and test'
   inputs:
     mavenPomFile: 'pom.xml'  # Si el pom.xml está en la raíz del repositorio
-    codeCoverageToolOption: Cobertura
+    mavenHome: 'C:\Users\megam\OneDrive\Escritorio\apache-maven-3.9.9-bin\apache-maven-3.9.9'  # Ruta correcta de Maven
+    goals: 'clean install'  # Los objetivos de Maven que quieres ejecutar
+    codeCoverageToolOption: 'Cobertura'  # Herramienta de cobertura (Cobertura en este caso)
+
 
 - task: CopyFiles@2
   displayName: 'Copy Files to: $(Build.ArtifactStagingDirectory)'
