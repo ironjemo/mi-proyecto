@@ -1,0 +1,39 @@
+# Maven
+# Build your Java project and run tests with Apache Maven.
+# Add steps that analyze code, save build artifacts, deploy, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/java
+
+trigger:
+- main
+
+pool:
+  name: Projectpool  # Asegúrate de que 'Projectpool' esté configurado correctamente
+
+steps:
+- task: Maven@3
+  displayName: 'Maven build and test'
+  inputs:
+    mavenPomFile: 'pom.xml'  # Ruta al archivo pom.xml si está en la raíz del repositorio
+    mavenHomeOption: 'Custom'  # Usar una instalación personalizada de Maven
+    mavenHome: 'C:\Users\megam\OneDrive\Escritorio\apache-maven-3.9.9-bin\apache-maven-3.9.9'  # Ruta personalizada de Maven
+    goals: 'clean install'  # Los objetivos de Maven que quieres ejecutar
+    options: '-Dmaven.test.failure.ignore=false'  # Opcional: Si quieres que el build falle si las pruebas fallan
+    codeCoverageToolOption: 'Cobertura'  # Herramienta de cobertura (Cobertura en este caso)
+
+- task: CopyFiles@2
+  displayName: 'Copy Files to: $(Build.ArtifactStagingDirectory)'
+  inputs:
+    SourceFolder: '$(Build.SourcesDirectory)/target'  # Asumiendo que los archivos .jar están en la carpeta 'target'
+    Contents: '**/*.jar'  # Copiar todos los archivos .jar generados
+    TargetFolder: '$(Build.ArtifactStagingDirectory)'  # Destino donde se copiarán los artefactos
+    CleanTargetFolder: true  # Limpiar la carpeta de destino antes de copiar
+    preserveTimestamp: true  # Preservar la marca de tiempo de los archivos copiados
+  condition: succeededOrFailed()  # Ejecutar esta tarea incluso si otras fallan
+
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish Artifact: drop'
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)'  # Carpeta donde se copiaron los .jar
+    ArtifactName: 'drop'  # Nombre del artefacto a publicar
+    publishLocation: 'Container'  # Publicar en el contenedor de artefactos
+  condition: succeededOrFailed()  # Ejecutar esta tarea incluso si otras fallan
